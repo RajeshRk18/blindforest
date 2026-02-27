@@ -39,7 +39,7 @@ User                          Signer
 
 ## Sizes (Paper Table 3)
 
-Measured on Apple M4 Air, 24 GB RAM
+Measured on Apple M4, 24 GB RAM, macOS 26.3.
 
 | Component | Size | Notes |
 |-----------|------|-------|
@@ -63,6 +63,73 @@ Measured on Apple M4 Air, 24 GB RAM
 | SHA-256 compressions per round | ~524 |
 
 Run `cargo run --example measure_sizes` to reproduce.
+
+## Benchmarks
+
+Measured on Apple M4, 24 GB RAM, macOS 26.3. Release mode (`cargo bench`).
+
+### Protocol operations
+
+| Operation | Time |
+|-----------|------|
+| Keygen (1024 leaves) | 526.40 ms |
+| User commit | 189.79 ns |
+| Signer sign (WOTS + auth path) | 518.83 us |
+| ZKBoo prove (1 round) | 4.55 s |
+| ZKBoo verify (1 round) | 2.97 s |
+| End-to-end (1 round) | 7.52 s |
+| End-to-end (219 rounds, estimated) | ~27.4 min |
+
+### Primitives
+
+| Operation | Time |
+|-----------|------|
+| SHA-256 raw (64 B) | 230.31 ns |
+| SHA-256 domain-separated (64 B) | 222.07 ns |
+| SHA-256 domain hasher (8192 B) | 14.21 us |
+| Commitment (commit) | 225.11 ns |
+| Commitment (verify) | 242.95 ns |
+| PRF generate (32 B) | 822.52 ns |
+| PRF fill (1024 B) | 4.25 us |
+
+### WOTS
+
+| Operation | Time |
+|-----------|------|
+| Keygen (512 chains) | 487.88 us |
+| Sign | 30.01 us |
+| Verify | 30.65 us |
+| Recover PK | 30.07 us |
+| PK to leaf | 28.78 us |
+
+### Merkle tree
+
+| Operation | Time |
+|-----------|------|
+| Build tree (1024 leaves) | 229.83 us |
+| Auth path extract | 20.46 ns |
+| Recompute root | 2.30 us |
+| Verify auth path | 2.30 us |
+
+### MPC internals
+
+| Operation | Time |
+|-----------|------|
+| XOR gate | 1.45 ns |
+| NOT gate | 1.05 ns |
+| AND gate | 1.79 us |
+| ADD gate | 14.42 us |
+| Ch function | 1.80 us |
+| Maj function | 1.81 us |
+| SHA-256 compress (1 block, MPC) | 7.64 ms |
+| SHA-256 full (1 block, MPC) | 7.66 ms |
+| View commit (10k outputs) | 71.85 us |
+| Tape stream (1000 u32) | 65.23 us |
+| Fiat-Shamir challenge (219 rounds) | 41.16 us |
+| Share circuit input | 558.82 us |
+| Evaluate circuit (1 round) | 4.10 s |
+
+Run `cargo bench` to reproduce.
 
 ## Usage
 
